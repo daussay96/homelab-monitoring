@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: DaemonSet            # Runs one pod per node automatically
+metadata:
+  name: node-exporter
+  namespace: monitoring    # Must match the namespace we just created
+  labels:
+    app: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter   # Links this DaemonSet to its pods
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostNetwork: true    # Uses the node's real network (not container network)
+                           # Needed so it can see actual host metrics
+      hostPID: true        # Shares the node's process namespace
+                           # Needed to see all running processes for metrics
+      containers:
+        - name: node-exporter
+          image: prom/node-exporter:v1.8.1   # Official Node Exporter image
+          args:
+            - --path.sysfs=/host/sys         # Tells it where to find kernel stats
+            - --path.procfs=/host/proc       # Tells it where to find process stats
+            - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker)($|/)
+                                             # Ignores virtual/system filesystems
+          ports:
+            - containerPort: 9100            # Port Node Exporter listens on
+              name: metrics
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc          # Mounts the host /proc into the container
+              readOnly: true
+            - name: sys
+              mountPath: /host/sys           # Mounts the host /sys into the container
+              readOnly: true
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc                      # The actual /proc on the node
+        - name: sys
+          hostPath:
+            path: /sys                       # The actual /sys on the node
+      tolerations:
+        - effect: NoSchedule                 # Allows it to run on control-plane nodes too
+          operator: Exists                   # (by default k8s blocks workloads on control-plane)

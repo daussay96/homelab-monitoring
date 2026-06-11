@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.4.3
+          ports:
+            - containerPort: 3000     # Grafana's default web UI port
+          env:
+            - name: GF_SECURITY_ADMIN_USER
+              value: "admin"          # Default login username
+            - name: GF_SECURITY_ADMIN_PASSWORD
+              value: "homelab123"     # Login password — change this if you like
+            - name: GF_USERS_ALLOW_SIGN_UP
+              value: "false"          # Disables public registration
+          volumeMounts:
+            - name: grafana-datasource
+              mountPath: /etc/grafana/provisioning/datasources/
+                                      # Grafana auto-loads datasource configs from here
+      volumes:
+        - name: grafana-datasource
+          configMap:
+            name: grafana-datasource  # Mounts our ConfigMap into the container
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP               # Internal only — we'll use port-forward to reach it

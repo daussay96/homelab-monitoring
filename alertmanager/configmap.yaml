@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  alertmanager.yml: |
+    global:
+      resolve_timeout: 5m         # How long before a resolved alert is marked cleared
+
+    route:
+      group_by: ['alertname', 'instance']   # Groups similar alerts together
+                                             # Like grouping incidents by type in ServiceNow
+      group_wait: 30s             # Waits 30s before sending first alert — catches flaps
+      group_interval: 5m          # Waits 5m before sending alerts for the same group
+      repeat_interval: 1h         # Re-sends unresolved alerts every 1 hour
+      receiver: 'default'         # Sends to the receiver below
+
+    receivers:
+      - name: 'default'           # For now alerts log here — we can add Slack/email later
+        webhook_configs: []       # Placeholder — we'll wire a real channel next session

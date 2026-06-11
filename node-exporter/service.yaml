@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service              # Exposes the Node Exporter pods on a stable address
+metadata:
+  name: node-exporter
+  namespace: monitoring
+  labels:
+    app: node-exporter
+spec:
+  selector:
+    app: node-exporter     # Finds pods with this label — matches our DaemonSet
+  ports:
+    - name: metrics
+      port: 9100           # Port other services use to reach Node Exporter
+      targetPort: 9100     # Port on the actual container
+  clusterIP: None          # "Headless" service — Prometheus talks to each pod directly
+                           # instead of load-balancing across them

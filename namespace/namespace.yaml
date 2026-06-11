@@ -1,0 +1,11 @@
+# namespace.yaml
+# A namespace is a logical boundary inside the cluster.
+# Think of it like a VLAN — isolates resources from other workloads.
+
+apiVersion: v1          # The Kubernetes API version for this resource type
+kind: Namespace         # We're creating a Namespace object
+metadata:
+  name: monitoring      # The name we'll reference in every other file
+  labels:
+    # Labels are key-value tags — useful for filtering and querying later
+    project: homelab-monitoring

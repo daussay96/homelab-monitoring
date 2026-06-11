@@ -1,0 +1,18 @@
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Kubernetes secrets (never commit these)
+*secret*.yaml
+*secret*.yml
+
+# Local override files
+*.local.yaml
+*.local.yml
+
+# Editor files
+.cursor/
+.vscode/
+*.swp
+*.swo
