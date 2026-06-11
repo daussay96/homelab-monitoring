@@ -13,13 +13,19 @@ the architecture used in enterprise edge environments (NCR Voyix SDS infrastruct
 | **Alertmanager** | Alert routing with SLA-style thresholds |
 | **k3d** | Local Kubernetes cluster (k3s in Docker) |
 
-## ArchitectureMacBook Air M5 (Docker Desktop)
+## Architecture
+
+```
+MacBook Air M5 (Docker Desktop)
 └── k3d cluster: monitoring
-└── namespace: monitoring
-├── node-exporter   (DaemonSet — one pod per node)
-├── prometheus      (Deployment — scrapes + evaluates rules)
-├── grafana         (Deployment — dashboards on :3001)
-└── alertmanager    (Deployment — alert routing on :9093)## Prerequisites
+    └── namespace: monitoring
+        ├── node-exporter   (DaemonSet — one pod per node)
+        ├── prometheus      (Deployment — scrapes + evaluates rules)
+        ├── grafana         (Deployment — dashboards on :3001)
+        └── alertmanager    (Deployment — alert routing on :9093)
+```
+
+## Prerequisites
 
 - Docker Desktop
 - [k3d](https://k3d.io) — `brew install k3d`
